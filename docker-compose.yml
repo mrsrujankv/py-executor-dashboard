@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  executor-dashboard:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=production
+      - FLASK_DEBUG=False
+    volumes:
+      - ./backend/logs:/app/backend/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+# Usage:
+# docker-compose up -d          # Start in background
+# docker-compose logs -f         # View logs
+# docker-compose down            # Stop
+# docker-compose ps             # See status

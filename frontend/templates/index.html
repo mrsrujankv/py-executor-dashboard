@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Executor Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🚀 Python Executor Dashboard</h1>
+            <p class="subtitle">Execute scripts and monitor progress in real-time</p>
+        </header>
+
+        <main class="main-content">
+            <!-- Execution Panel -->
+            <section class="panel execution-panel">
+                <h2>Execute Script</h2>
+                <form id="executionForm" class="execution-form">
+                    <div class="form-group">
+                        <label for="userName">Name <span class="required">*</span></label>
+                        <input 
+                            type="text" 
+                            id="userName" 
+                            name="userName"
+                            placeholder="Enter your name"
+                            required
+                            class="input-field"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="scriptType">Script Type <span class="required">*</span></label>
+                        <select id="scriptType" name="scriptType" class="input-field" required>
+                            <option value="">-- Select Script --</option>
+                            <option value="sample">Sample Script</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="scriptArgs">Arguments (Optional)</label>
+                        <input 
+                            type="text" 
+                            id="scriptArgs"
+                            name="scriptArgs"
+                            placeholder="Enter arguments separated by spaces"
+                            class="input-field"
+                        >
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" id="executeBtn">
+                        <span class="btn-icon">▶</span> Execute Script
+                    </button>
+                </form>
+
+                <div id="executionStatus" class="execution-status" style="display: none;">
+                    <div class="status-header">
+                        <h3>Execution Status</h3>
+                        <span class="status-badge" id="statusBadge">PENDING</span>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+                        </div>
+                        <span class="progress-text" id="progressText">0%</span>
+                    </div>
+                    <div class="status-info">
+                        <p><strong>Task ID:</strong> <span id="taskId" class="monospace">-</span></p>
+                        <p><strong>Status:</strong> <span id="currentStatus">-</span></p>
+                        <p><strong>Created At:</strong> <span id="createdAt">-</span></p>
+                        <p><strong>Completed At:</strong> <span id="completedAt">-</span></p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Logs Panel -->
+            <section class="panel logs-panel">
+                <div class="logs-header">
+                    <h2>Execution Logs</h2>
+                    <div class="logs-actions">
+                        <button class="btn btn-secondary" id="refreshLogsBtn" title="Refresh logs">🔄 Refresh</button>
+                        <button class="btn btn-secondary" id="copyLogsBtn" title="Copy logs to clipboard">📋 Copy</button>
+                        <button class="btn btn-secondary" id="downloadLogsBtn" title="Download logs">⬇️ Download</button>
+                    </div>
+                </div>
+                <div class="logs-container">
+                    <pre id="logsContent" class="logs-content">
+Select a task and execute to see logs here...</pre>
+                </div>
+            </section>
+
+            <!-- Task History Panel -->
+            <section class="panel history-panel">
+                <h2>Task History</h2>
+                <div class="table-container">
+                    <table class="tasks-table">
+                        <thead>
+                            <tr>
+                                <th>Task ID</th>
+                                <th>User</th>
+                                <th>Status</th>
+                                <th>Progress</th>
+                                <th>Created At</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tasksTableBody">
+                            <tr>
+                                <td colspan="6" class="text-center">No tasks yet. Execute a script to get started!</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+
+        <!-- <footer class="footer">
+            <p>Python Executor Dashboard v1.0 | Last updated: <span id="lastUpdate">-</span></p>
+        </footer> -->
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
