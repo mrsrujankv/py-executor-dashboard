@@ -1,46 +1,139 @@
-/* ========================================
-   Python Executor Dashboard - Styles
-   ======================================== */
+/*
+==============================================================================
+PYTHON EXECUTOR DASHBOARD - STYLES & THEME
+==============================================================================
 
+This CSS file provides styling for the complete dashboard UI.
+
+KEY FEATURES:
+1. Dark Theme: Modern dark-mode color scheme (suitable for long sessions)
+2. Responsive Design: Works on desktop (1400px), tablet (1024px), mobile (768px)
+3. CSS Variables: Centralized colors for easy theme customization
+4. Animations: Smooth transitions and loading animations
+5. Accessibility: Proper contrast ratios, focus states
+
+CSS VARIABLES (--variable-name):
+Used throughout the stylesheet for consistency. Change one variable to update
+the entire theme. Example: change --primary-color to instantly rebrand the app.
+
+RESPONSIVE BREAKPOINTS:
+- Desktop (>1024px): Full 2-column layout with large elements
+- Tablet (1024px): Switches to 1-column layout, adjusted spacing
+- Mobile (<768px): Smaller fonts, stacked buttons, touch-friendly sizes
+
+NAMING CONVENTION:
+- .panel: A card/box container element
+- .btn-primary: Primary action button (Execute, highlighted)
+- .btn-secondary: Secondary action button (Refresh, normal)
+- .status-badge: Colored status indicator (PENDING, RUNNING, etc.)
+- .logs-*: Related to logs display section
+- .tasks-*: Related to task history table
+
+==============================================================================
+*/
+
+/*
+CSS RESET: Remove default browser styles
+- Sets margin/padding to 0 for consistent spacing
+- box-sizing: border-box makes width calculations include padding/border
+*/
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+/*
+CSS VARIABLES (Custom Properties)
+Defined in :root so they're available globally in the stylesheet
+
+WHY USE CSS VARIABLES?
+1. Maintainability: Change color in one place, applies everywhere
+2. Consistency: All elements use same colors, fonts, shadows
+3. Theme Support: Could easily implement light/dark theme toggle
+4. Readability: color: var(--primary-color) is clearer than color: #3b82f6
+
+COLOR MEANINGS:
+- primary-color (blue): Main brand color, primary actions
+- secondary-color (purple): Accent, hover states, gradients
+- success-color (green): Success status, completed tasks
+- danger-color (red): Error/failed status, destructive actions
+- warning-color (orange): Pending/warning states, attention-needed
+
+BACKGROUND COLORS:
+- bg-primary: Darkest (page background)
+- bg-secondary: Dark (panel backgrounds)
+- bg-tertiary: Medium-dark (input fields, table headers)
+
+TEXT COLORS:
+- text-primary: Bright white (main text)
+- text-secondary: Gray (secondary/muted text)
+
+OTHER:
+- border-color: Subtle gray for dividers and input borders
+- shadow: Drop shadow for depth (used on cards/panels)
+*/
 :root {
-    --primary-color: #3b82f6;
-    --secondary-color: #8b5cf6;
-    --success-color: #10b981;
-    --danger-color: #ef4444;
-    --warning-color: #f59e0b;
-    --bg-primary: #0f172a;
-    --bg-secondary: #1e293b;
-    --bg-tertiary: #334155;
-    --text-primary: #f1f5f9;
-    --text-secondary: #cbd5e1;
-    --border-color: #475569;
-    --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    /* Primary brand colors */
+    --primary-color: #3b82f6;        /* Bright blue */
+    --secondary-color: #8b5cf6;      /* Purple accent */
+    
+    /* Status colors */
+    --success-color: #10b981;        /* Green for success */
+    --danger-color: #ef4444;         /* Red for errors/failures */
+    --warning-color: #f59e0b;        /* Orange for pending/warnings */
+    
+    /* Background colors (dark theme) */
+    --bg-primary: #0f172a;           /* Very dark blue (main background) */
+    --bg-secondary: #1e293b;         /* Dark blue (cards/panels) */
+    --bg-tertiary: #334155;          /* Medium dark (inputs/headers) */
+    
+    /* Text colors */
+    --text-primary: #f1f5f9;         /* Bright white (main text) */
+    --text-secondary: #cbd5e1;       /* Light gray (secondary text) */
+    
+    /* Border and shadow */
+    --border-color: #475569;         /* Gray borders and dividers */
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);  /* Drop shadow for depth */
 }
 
+/*
+BODY STYLES: Main page background and typography
+*/
 body {
+    /* Font stack: Uses system fonts for fast loading and consistency */
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    
+    /* Gradient background creates visual depth */
     background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+    
+    /* Text color and spacing */
     color: var(--text-primary);
-    line-height: 1.6;
+    line-height: 1.6;            /* Space between lines makes text readable */
+    
+    /* Full viewport height even if content is short */
     min-height: 100vh;
 }
 
+/*
+CONTAINER: Main wrapper limiting content width
+Ensures good readability on ultra-wide monitors
+*/
 .container {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 20px;
+    max-width: 1400px;           /* Don't let content get too wide */
+    margin: 0 auto;              /* Center the container */
+    padding: 20px;               /* Space around edges on mobile */
 }
 
-/* ========== Header ========== */
+/*
+==============================================================================
+HEADER SECTION: Top banner with title
+==============================================================================
+*/
 .header {
     text-align: center;
     padding: 40px 20px;
+    /* Gradient background makes it stand out from the page */
     background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
     border-radius: 12px;
     margin-bottom: 40px;
@@ -55,36 +148,53 @@ body {
 
 .header .subtitle {
     font-size: 1.1rem;
-    opacity: 0.9;
+    opacity: 0.9;              /* Slightly transparent for hierarchy */
     color: rgba(255, 255, 255, 0.95);
 }
 
-/* ========== Main Content ========== */
+/*
+==============================================================================
+MAIN CONTENT LAYOUT: CSS Grid for responsive 2-column layout
+==============================================================================
+*/
 .main-content {
+    /* CSS Grid: 2 equal-width columns with 30px gap between them */
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 30px;
+    grid-template-columns: 1fr 1fr;  /* 1fr = 1 fraction (equal width) */
+    gap: 30px;                       /* Space between grid items */
     margin-bottom: 30px;
 }
 
+/*
+RESPONSIVE: On tablets/iPads (1024px or less), switch to 1 column
+This prevents cramped text on medium screens
+*/
 @media (max-width: 1024px) {
     .main-content {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr;  /* Single column on smaller screens */
     }
 }
 
-/* ========== Panels ========== */
+/*
+==============================================================================
+PANELS: Card-style containers for content sections
+==============================================================================
+Each panel is a self-contained box with rounded corners and shadow
+*/
 .panel {
     background: var(--bg-secondary);
     border: 1px solid var(--border-color);
     border-radius: 12px;
     padding: 30px;
     box-shadow: var(--shadow);
+    /* Smooth transition when properties change (like on hover) */
     transition: all 0.3s ease;
 }
 
+/* Hover effect: Highlight border with primary color when user hovers */
 .panel:hover {
     border-color: var(--primary-color);
+    /* Enhanced shadow on hover creates "lift" effect */
     box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
 }
 
@@ -94,17 +204,28 @@ body {
     color: var(--text-primary);
 }
 
-/* ========== Execution Panel ========== */
+/*
+==============================================================================
+EXECUTION PANEL: Form inputs and submission
+==============================================================================
+Left column panel where users enter script details
+*/
 .execution-panel {
-    grid-column: 1;
+    grid-column: 1;              /* Positions in first column */
 }
 
+/*
+Form layout: Flexbox stack items vertically
+*/
 .execution-form {
     display: flex;
-    flex-direction: column;
-    gap: 20px;
+    flex-direction: column;      /* Stack items from top to bottom */
+    gap: 20px;                  /* Space between form groups */
 }
 
+/*
+Form groups: Container for label + input pairs
+*/
 .form-group {
     display: flex;
     flex-direction: column;
@@ -116,10 +237,14 @@ body {
     color: var(--text-primary);
 }
 
+/* Red asterisk (*) for required fields */
 .form-group .required {
     color: var(--danger-color);
 }
 
+/*
+Input fields: Consistent styling for text inputs, selects, etc.
+*/
 .input-field {
     padding: 12px 16px;
     background: var(--bg-tertiary);
@@ -127,20 +252,33 @@ body {
     border-radius: 8px;
     color: var(--text-primary);
     font-size: 1rem;
+    /* Smooth transition when focus state changes */
     transition: all 0.3s ease;
 }
 
+/*
+Input focus state: Highlights the field when user clicks/tabs into it
+- Removes browser outline
+- Changes border to primary color
+- Adds subtle blue glow
+*/
 .input-field:focus {
     outline: none;
     border-color: var(--primary-color);
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
+/* Placeholder text color (hint text) */
 .input-field::placeholder {
     color: var(--text-secondary);
 }
 
-/* ========== Buttons ========== */
+/*
+==============================================================================
+BUTTONS: Reusable button styles with variants
+==============================================================================
+Two main button types: Primary (important actions) and Secondary (helper actions)
+*/
 .btn {
     padding: 12px 24px;
     border: none;
@@ -148,32 +286,47 @@ body {
     font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
+    /* Smooth animations on all state changes */
     transition: all 0.3s ease;
+    /* Flexbox for icon + text alignment */
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: 8px;                   /* Space between icon and text */
 }
 
+/*
+PRIMARY BUTTON: Main action (Execute Script)
+- Gradient background stands out
+- Lift animation on hover shows interactivity
+*/
 .btn-primary {
     background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
     color: white;
 }
 
 .btn-primary:hover {
+    /* Slight upward movement on hover (lift effect) */
     transform: translateY(-2px);
+    /* Enhanced shadow makes button appear to lift */
     box-shadow: 0 8px 16px rgba(59, 130, 246, 0.3);
 }
 
 .btn-primary:active {
+    /* Button returns to normal position when clicked */
     transform: translateY(0);
 }
 
 .btn-primary:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    transform: none;
+    opacity: 0.6;               /* Faded appearance */
+    cursor: not-allowed;        /* Show not-clickable cursor */
+    transform: none;            /* Remove lift effect */
 }
 
+/*
+SECONDARY BUTTON: Helper actions (Refresh, Copy, Download)
+- Subtle background, blends with interface
+- Border highlights on hover
+*/
 .btn-secondary {
     background: var(--bg-tertiary);
     color: var(--text-primary);
@@ -181,6 +334,7 @@ body {
 }
 
 .btn-secondary:hover {
+    /* On hover, color and border change to primary for visibility */
     border-color: var(--primary-color);
     color: var(--primary-color);
 }
@@ -189,11 +343,16 @@ body {
     font-size: 1.2rem;
 }
 
-/* ========== Status Section ========== */
+/*
+==============================================================================
+EXECUTION STATUS SECTION: Progress display and task details
+==============================================================================
+Shows after user clicks Execute: Status badge, progress bar, task info
+*/
 .execution-status {
     margin-top: 30px;
     padding-top: 20px;
-    border-top: 1px solid var(--border-color);
+    border-top: 1px solid var(--border-color);  /* Divider line */
 }
 
 .status-header {
@@ -207,37 +366,47 @@ body {
     margin: 0;
 }
 
+/*
+STATUS BADGE: Colored label showing task state
+Uses different colors for each status (pending=orange, running=blue, etc.)
+*/
 .status-badge {
     display: inline-block;
     padding: 6px 12px;
-    border-radius: 20px;
+    border-radius: 20px;            /* Fully rounded for pill shape */
     font-size: 0.85rem;
     font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    text-transform: uppercase;      /* All caps for impact */
+    letter-spacing: 0.5px;         /* Slight spacing between letters */
 }
 
+/* Status colors: Different color for each status type */
 .status-badge.pending {
-    background: var(--warning-color);
+    background: var(--warning-color);  /* Orange for pending */
     color: var(--bg-primary);
 }
 
 .status-badge.running {
-    background: var(--primary-color);
+    background: var(--primary-color);  /* Blue for running */
     color: white;
 }
 
 .status-badge.success {
-    background: var(--success-color);
+    background: var(--success-color);  /* Green for success */
     color: white;
 }
 
 .status-badge.failed {
-    background: var(--danger-color);
+    background: var(--danger-color);   /* Red for failed */
     color: white;
 }
 
-/* ========== Progress Bar ========== */
+/*
+==============================================================================
+PROGRESS BAR: Visual indicator of task completion percentage
+==============================================================================
+Shows 0% → 100% as script executes
+*/
 .progress-container {
     display: flex;
     align-items: center;
@@ -246,26 +415,34 @@ body {
 }
 
 .progress-bar {
+    /* Takes up remaining horizontal space */
     flex: 1;
     height: 8px;
-    background: var(--bg-tertiary);
+    background: var(--bg-tertiary);  /* Background (empty state) */
     border-radius: 10px;
     overflow: hidden;
 }
 
 .progress-fill {
     height: 100%;
+    /* Gradient fill adds visual polish */
     background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    /* Smooth animation when width changes (0% → 100%) */
     transition: width 0.3s ease;
 }
 
 .progress-text {
     font-weight: 600;
     min-width: 45px;
-    text-align: right;
+    text-align: right;              /* Right align for cleaner spacing */
 }
 
-/* ========== Status Info ========== */
+/*
+==============================================================================
+STATUS INFO: Task details (ID, status, timestamps)
+==============================================================================
+Displays metadata about the currently running task
+*/
 .status-info {
     display: grid;
     gap: 10px;
@@ -275,22 +452,32 @@ body {
     font-size: 0.95rem;
 }
 
+/*
+Monospace font for IDs and technical info
+Makes code/IDs stand out and easier to copy
+*/
 .monospace {
     font-family: 'Courier New', monospace;
     background: var(--bg-tertiary);
     padding: 2px 6px;
     border-radius: 4px;
-    word-break: break-all;
+    word-break: break-all;         /* Break long IDs into multiple lines */
 }
 
-/* ========== Logs Panel ========== */
+/*
+==============================================================================
+LOGS PANEL: Console output display
+==============================================================================
+Right side panel showing script execution output in real-time
+*/
 .logs-panel {
-    grid-column: 2;
-    grid-row: 1 / 3;
+    grid-column: 2;              /* Second column on desktop */
+    grid-row: 1 / 3;            /* Spans 2 rows to fill height */
     display: flex;
-    flex-direction: column;
+    flex-direction: column;      /* Stack header and content vertically */
 }
 
+/* On tablets: Switch to normal single-row behavior */
 @media (max-width: 1024px) {
     .logs-panel {
         grid-column: 1;
@@ -310,6 +497,10 @@ body {
     margin: 0;
 }
 
+/*
+Action buttons in logs header (Refresh, Copy, Download)
+Grouped together on the right
+*/
 .logs-actions {
     display: flex;
     gap: 10px;
@@ -320,7 +511,11 @@ body {
     font-size: 0.9rem;
 }
 
+/*
+Logs container: Scrollable area for log output
+*/
 .logs-container {
+    /* Takes up remaining vertical space in panel */
     flex: 1;
     overflow: hidden;
     border: 1px solid var(--border-color);
@@ -328,51 +523,68 @@ body {
     background: var(--bg-tertiary);
 }
 
+/*
+Logs content display using <pre> element
+<pre> preserves whitespace and newlines from console output
+*/
 .logs-content {
     margin: 0;
     padding: 20px;
     font-family: 'Courier New', monospace;
     font-size: 0.9rem;
     color: var(--text-secondary);
+    /* Allow scrolling if content exceeds container */
     overflow: auto;
     max-height: 500px;
+    /* Preserve formatting from script output */
     white-space: pre-wrap;
     word-wrap: break-word;
     line-height: 1.4;
 }
 
-/* ========== Task History Panel ========== */
+/*
+==============================================================================
+TASK HISTORY PANEL: Table of all executed tasks
+==============================================================================
+Bottom panel showing complete history of all tasks with their status
+*/
 .history-panel {
-    grid-column: 1 / -1;
+    grid-column: 1 / -1;        /* Spans full width (all columns) */
 }
 
 .table-container {
+    /* Allow horizontal scrolling on very small screens */
     overflow-x: auto;
 }
 
+/*
+Table styling: Clean, readable task history
+*/
 .tasks-table {
     width: 100%;
+    /* Collapse borders for cleaner appearance */
     border-collapse: collapse;
 }
 
 .tasks-table thead {
-    background: var(--bg-tertiary);
+    background: var(--bg-tertiary);  /* Darker background for header row */
 }
 
 .tasks-table th {
     padding: 15px;
     text-align: left;
     font-weight: 600;
-    border-bottom: 2px solid var(--border-color);
+    border-bottom: 2px solid var(--border-color);  /* Thick line under headers */
     color: var(--text-primary);
 }
 
 .tasks-table td {
     padding: 15px;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);  /* Light line between rows */
     color: var(--text-secondary);
 }
 
+/* Hover effect: Highlight row when mouse hovers over it */
 .tasks-table tbody tr:hover {
     background: var(--bg-tertiary);
     cursor: pointer;
@@ -384,6 +596,10 @@ body {
     color: var(--text-secondary);
 }
 
+/*
+Task ID display: Shortened ID with monospace font
+Shows first 8 characters of UUID for readability
+*/
 .task-id-short {
     font-family: 'Courier New', monospace;
     font-size: 0.85rem;
@@ -392,6 +608,13 @@ body {
     border-radius: 4px;
 }
 
+/*
+==============================================================================
+STATUS CELL: Status badges in the task history table
+==============================================================================
+Color-coded status indicators showing task state
+Different colors: pending (orange), running (blue), success (green), failed (red)
+*/
 .status-cell {
     display: inline-block;
     padding: 4px 8px;
@@ -401,36 +624,45 @@ body {
     text-transform: uppercase;
 }
 
+/* Color variations for each status */
 .status-cell.pending {
-    background: rgba(245, 158, 11, 0.2);
-    color: var(--warning-color);
+    background: rgba(245, 158, 11, 0.2);  /* Light orange background */
+    color: var(--warning-color);           /* Dark orange text */
 }
 
 .status-cell.running {
-    background: rgba(59, 130, 246, 0.2);
-    color: var(--primary-color);
+    background: rgba(59, 130, 246, 0.2);  /* Light blue background */
+    color: var(--primary-color);           /* Blue text */
+    /* Pulsing animation for "currently running" visual feedback */
     animation: pulse 1.5s infinite;
 }
 
 .status-cell.success {
-    background: rgba(16, 185, 129, 0.2);
-    color: var(--success-color);
+    background: rgba(16, 185, 129, 0.2);  /* Light green background */
+    color: var(--success-color);           /* Dark green text */
 }
 
 .status-cell.failed {
-    background: rgba(239, 68, 68, 0.2);
-    color: var(--danger-color);
+    background: rgba(239, 68, 68, 0.2);   /* Light red background */
+    color: var(--danger-color);            /* Dark red text */
 }
 
+/*
+PULSE ANIMATION: Used for "running" status
+Creates breathing effect to draw attention to active tasks
+*/
 @keyframes pulse {
     0%, 100% {
-        opacity: 1;
+        opacity: 1;      /* Fully visible */
     }
     50% {
-        opacity: 0.7;
+        opacity: 0.7;    /* Slightly faded midway */
     }
 }
 
+/*
+Action buttons in task rows (Select, View, etc.)
+*/
 .action-buttons {
     display: flex;
     gap: 8px;
@@ -449,10 +681,16 @@ body {
 
 .action-btn:hover {
     background: var(--secondary-color);
+    /* Slight scale increase for interactive feedback */
     transform: scale(1.05);
 }
 
-/* ========== Footer ========== */
+/*
+==============================================================================
+FOOTER: Page footer information
+==============================================================================
+Currently hidden but shows version and last update time
+*/
 .footer {
     text-align: center;
     padding: 20px;
@@ -461,47 +699,87 @@ body {
     border-top: 1px solid var(--border-color);
 }
 
-/* ========== Utilities ========== */
+/*
+==============================================================================
+UTILITY CLASSES: Helper styles used throughout
+==============================================================================
+*/
+
+/* Hidden: Hide elements (used in JavaScript) */
 .hidden {
     display: none !important;
 }
 
+/*
+SPINNER: Loading animation (circular rotating indicator)
+Used to show loading state during API calls
+*/
 .spinner {
     display: inline-block;
     width: 16px;
     height: 16px;
+    /* Transparent border with white top creates spinning effect */
     border: 2px solid rgba(255, 255, 255, 0.3);
     border-radius: 50%;
     border-top-color: white;
+    /* Continuous rotation animation */
     animation: spin 0.6s linear infinite;
 }
 
+/*
+SPIN ANIMATION: Rotates spinner 360 degrees continuously
+*/
 @keyframes spin {
     to {
         transform: rotate(360deg);
     }
 }
 
-/* ========== Responsive ========== */
+/*
+==============================================================================
+RESPONSIVE DESIGN: Tablet and Mobile Adaptations
+==============================================================================
+
+BREAKPOINTS:
+- 1024px and below: Tablet view (switch to single column)
+- 768px and below: Mobile view (smaller fonts, stacked buttons)
+
+This ensures the dashboard works well on all device sizes
+*/
+
+/* Tablet: Smaller fonts and adjusted spacing */
+@media (max-width: 1024px) {
+    .main-content {
+        grid-template-columns: 1fr;  /* Stack columns vertically */
+    }
+    
+    .logs-panel {
+        grid-column: 1;
+        grid-row: auto;
+    }
+}
+
+/* Mobile: Significant layout adjustments */
 @media (max-width: 768px) {
     .header h1 {
-        font-size: 1.8rem;
+        font-size: 1.8rem;          /* Smaller title on mobile */
     }
 
     .panel {
-        padding: 20px;
+        padding: 20px;              /* Reduce padding on small screens */
     }
 
     .logs-header {
-        flex-direction: column;
+        flex-direction: column;      /* Stack title and buttons vertically */
         align-items: flex-start;
     }
 
     .logs-actions {
-        width: 100%;
+        width: 100%;                /* Buttons take full width */
     }
 
     .logs-actions .btn {
+        /* Buttons stretch to fill width and center text */
         flex: 1;
         justify-content: center;
     }
@@ -512,6 +790,6 @@ body {
 
     .tasks-table th,
     .tasks-table td {
-        padding: 10px;
+        padding: 10px;              /* Reduce padding in table */
     }
 }

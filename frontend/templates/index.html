@@ -1,43 +1,135 @@
+<!--
+==============================================================================
+PYTHON EXECUTOR DASHBOARD - HTML TEMPLATE
+==============================================================================
+
+This is the main HTML page shown to users. It's a Flask template that gets
+rendered by the backend and sent to the browser.
+
+KEY CONCEPTS:
+- {{ url_for('static', filename='style.css') }}: Jinja2 template syntax
+  Flask uses this to generate the correct URL to CSS files
+- id attributes: Used by JavaScript to find and manipulate elements
+- class attributes: Used by CSS for styling
+- form submission: Triggers JavaScript event listener
+
+HTML STRUCTURE:
+1. Header: Title and subtitle
+2. Main content: Three sections
+   - Execution panel: Form to start scripts
+   - Logs panel: Display execution output
+   - History panel: Table of all tasks
+3. Footer: Last update time
+
+RESPONSIVE DESIGN:
+Uses CSS Grid for layout. On mobile, sections stack vertically.
+==============================================================================
+-->
+
 <!DOCTYPE html>
+<!-- DOCTYPE tells browser this is HTML5 -->
 <html lang="en">
+<!-- lang="en" helps with translations and accessibility -->
+
 <head>
+    <!-- HEAD: Metadata and resources (not visible to user) -->
+    
+    <!-- Character encoding: UTF-8 supports all languages -->
     <meta charset="UTF-8">
+    
+    <!-- Viewport: Make site responsive on mobile devices -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Page title shown in browser tab -->
     <title>Python Executor Dashboard</title>
+    
+    <!-- Link to CSS stylesheet
+         url_for() is Jinja2 template function that generates correct URL
+         In development: /static/style.css
+         Flask finds style.css in frontend/static/ directory
+    -->
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
+    <!-- BODY: Visible content -->
+    
+    <!-- Container: Main wrapper for all content -->
     <div class="container">
+        
+        <!-- HEADER SECTION -->
         <header class="header">
             <h1>🚀 Python Executor Dashboard</h1>
             <p class="subtitle">Execute scripts and monitor progress in real-time</p>
         </header>
 
+        <!-- MAIN CONTENT AREA -->
         <main class="main-content">
-            <!-- Execution Panel -->
+            
+            <!--
+            ==================================================================
+            EXECUTION PANEL - Left side, top
+            ==================================================================
+            Users fill out this form to execute a script
+            -->
             <section class="panel execution-panel">
                 <h2>Execute Script</h2>
+                
+                <!-- FORM: Collects user input
+                     id="executionForm" - JavaScript finds this to attach event listener
+                     When user clicks submit button, JavaScript intercepts it
+                -->
                 <form id="executionForm" class="execution-form">
+                    
+                    <!--
+                    FORM GROUP 1: User Name Input
+                    - User enters their name for logging/reference purposes
+                    - Required field (required attribute makes it mandatory)
+                    - id="userName" - JavaScript accesses this to get the value
+                    -->
                     <div class="form-group">
-                        <label for="userName">Name <span class="required">*</span></label>
+                        <label for="userName">User Name <span class="required">*</span></label>
                         <input 
-                            type="text" 
-                            id="userName" 
-                            name="userName"
-                            placeholder="Enter your name"
-                            required
-                            class="input-field"
+                            type="text"                    <!-- Text input -->
+                            id="userName"                   <!-- JavaScript reference -->
+                            name="userName"                 <!-- Form field name -->
+                            placeholder="Enter your name"   <!-- Hint text -->
+                            required                        <!-- Make it mandatory -->
+                            class="input-field"             <!-- CSS styling -->
                         >
                     </div>
 
+                    <!--
+                    FORM GROUP 2: Script Type Dropdown
+                    - User selects which script to run
+                    - <option value=""> is placeholder (-- Select Script --)
+                    - <option value="sample"> is the actual script option
+                    - id="scriptType" - JavaScript gets selected value from this
+                    
+                    HOW TO ADD MORE SCRIPTS:
+                    1. Create new Python script in backend/
+                    2. Register in backend/app.py execute_script() function
+                    3. Add new <option> here with unique value
+                    -->
                     <div class="form-group">
                         <label for="scriptType">Script Type <span class="required">*</span></label>
                         <select id="scriptType" name="scriptType" class="input-field" required>
+                            <!-- Placeholder option (empty value) -->
                             <option value="">-- Select Script --</option>
+                            <!-- Available script options -->
                             <option value="sample">Sample Script</option>
+                            <!-- Add more options here as you create new scripts -->
+                            <!-- <option value="custom">Custom Script</option> -->
                         </select>
                     </div>
 
+                    <!--
+                    FORM GROUP 3: Command-line Arguments (Optional)
+                    - Users can pass arguments to the Python script
+                    - Example: if script expects filename, user enters it here
+                    - id="scriptArgs" - JavaScript parses and splits this by spaces
+                    - NOT required, unlike name and script type
+                    -->
                     <div class="form-group">
                         <label for="scriptArgs">Arguments (Optional)</label>
                         <input 
@@ -49,52 +141,177 @@
                         >
                     </div>
 
+                    <!--
+                    SUBMIT BUTTON
+                    - type="submit" triggers form submission
+                    - JavaScript intercepts form submission with event listener
+                    - API call made in background (doesn't reload page)
+                    - id="executeBtn" - can be referenced by JavaScript if needed
+                    - ▶ icon provides visual feedback (play button)
+                    -->
                     <button type="submit" class="btn btn-primary" id="executeBtn">
                         <span class="btn-icon">▶</span> Execute Script
                     </button>
                 </form>
 
+                <!--
+                ==================================================================
+                EXECUTION STATUS DISPLAY
+                ==================================================================
+                This section is HIDDEN initially (display: none)
+                JavaScript shows it when user clicks execute
+                
+                Contains:
+                - Status badge (PENDING, RUNNING, SUCCESS, FAILED)
+                - Progress bar with percentage
+                - Task details (ID, status, timestamps)
+                -->
                 <div id="executionStatus" class="execution-status" style="display: none;">
+                    <!-- Status header with badge -->
                     <div class="status-header">
                         <h3>Execution Status</h3>
+                        <!-- id="statusBadge" - JavaScript updates this with task status -->
                         <span class="status-badge" id="statusBadge">PENDING</span>
                     </div>
+
+                    <!-- Progress bar showing task completion percentage -->
                     <div class="progress-container">
+                        <!-- Outer container for the progress bar -->
                         <div class="progress-bar">
+                            <!-- Inner fill that grows from 0% to 100% -->
+                            <!-- id="progressFill" - JavaScript updates style.width -->
                             <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
                         </div>
+                        <!-- Text showing percentage: "0%", "50%", "100%" -->
+                        <!-- id="progressText" - JavaScript updates this -->
                         <span class="progress-text" id="progressText">0%</span>
                     </div>
+
+                    <!-- Task information details -->
                     <div class="status-info">
+                        <!--
+                        Task ID: Unique identifier for the execution
+                        JavaScript gets this from API response and displays here
+                        class="monospace" uses monospace font for ID readability
+                        id="taskId" - JavaScript populates this
+                        -->
                         <p><strong>Task ID:</strong> <span id="taskId" class="monospace">-</span></p>
+                        
+                        <!--
+                        Current Status: PENDING → RUNNING → SUCCESS or FAILED
+                        JavaScript polls backend every 1 second to get updated status
+                        id="currentStatus" - JavaScript updates this
+                        -->
                         <p><strong>Status:</strong> <span id="currentStatus">-</span></p>
+                        
+                        <!--
+                        Creation timestamp: When script execution started
+                        id="createdAt" - JavaScript formats and displays timestamp
+                        -->
                         <p><strong>Created At:</strong> <span id="createdAt">-</span></p>
+                        
+                        <!--
+                        Completion timestamp: When script finished (success or failure)
+                        Only populated after execution completes
+                        id="completedAt" - JavaScript populates when done
+                        -->
                         <p><strong>Completed At:</strong> <span id="completedAt">-</span></p>
                     </div>
                 </div>
             </section>
 
-            <!-- Logs Panel -->
+            <!--
+            ==================================================================
+            LOGS PANEL - Right side, top
+            ==================================================================
+            Displays console output from the executing Python script
+            
+            User can:
+            - View log output in real-time (polling every 1 second)
+            - Refresh logs manually
+            - Copy logs to clipboard
+            - Download logs as .txt file
+            -->
             <section class="panel logs-panel">
+                <!-- Header with title and action buttons -->
                 <div class="logs-header">
                     <h2>Execution Logs</h2>
+                    
+                    <!-- Action buttons -->
                     <div class="logs-actions">
+                        <!--
+                        Refresh Button: Manually refresh logs
+                        id="refreshLogsBtn" - JavaScript event listener triggers getTaskLogs()
+                        title attribute shows tooltip on hover
+                        -->
                         <button class="btn btn-secondary" id="refreshLogsBtn" title="Refresh logs">🔄 Refresh</button>
+                        
+                        <!--
+                        Copy Button: Copy log text to clipboard
+                        id="copyLogsBtn" - JavaScript listener copies content from #logsContent
+                        Shows notification after copy
+                        -->
                         <button class="btn btn-secondary" id="copyLogsBtn" title="Copy logs to clipboard">📋 Copy</button>
+                        
+                        <!--
+                        Download Button: Save logs as text file
+                        id="downloadLogsBtn" - JavaScript creates blob and download link
+                        Creates file named task-[id].txt
+                        -->
                         <button class="btn btn-secondary" id="downloadLogsBtn" title="Download logs">⬇️ Download</button>
                     </div>
                 </div>
+
+                <!--
+                Logs Container: Displays script output
+                - Uses <pre> element to preserve formatting and whitespace
+                  (important for console output with indentation)
+                - Monospace font makes output readable
+                - Scrollable if content exceeds container height
+                -->
                 <div class="logs-container">
+                    <!--
+                    id="logsContent" - JavaScript appends log lines here
+                    Initially shows placeholder message
+                    Gets replaced with actual log output once task runs
+                    class="logs-content" provides CSS styling (scrolling, font, color)
+                    -->
                     <pre id="logsContent" class="logs-content">
 Select a task and execute to see logs here...</pre>
                 </div>
             </section>
 
-            <!-- Task History Panel -->
+            <!--
+            ==================================================================
+            TASK HISTORY PANEL - Right side, bottom
+            ==================================================================
+            Shows all previously executed tasks in a table
+            
+            Purpose:
+            - User can see history of all executions
+            - Click on a task to view its logs again
+            - See status, progress, timestamps for each task
+            
+            Columns:
+            - Task ID: Unique identifier
+            - User: Name of person who ran it
+            - Status: PENDING, RUNNING, SUCCESS, FAILED
+            - Progress: 0% to 100%
+            - Created At: Timestamp
+            - Actions: Select button to view logs
+            -->
             <section class="panel history-panel">
                 <h2>Task History</h2>
+                
+                <!-- Table container allows horizontal scrolling on mobile -->
                 <div class="table-container">
+                    <!--
+                    Table: Displays task history
+                    id="tasksTableBody" - JavaScript appends rows here dynamically
+                    JavaScript calls getAllTasks() and builds table from response
+                    -->
                     <table class="tasks-table">
+                        <!-- Table header row with column titles -->
                         <thead>
                             <tr>
                                 <th>Task ID</th>
@@ -105,6 +322,22 @@ Select a task and execute to see logs here...</pre>
                                 <th>Actions</th>
                             </tr>
                         </thead>
+                        
+                        <!--
+                        Table body: Contains dynamic rows
+                        id="tasksTableBody" - JavaScript populates this
+                        
+                        Initial state: Shows "No tasks yet" placeholder
+                        After execution: Shows actual task rows
+                        
+                        Each row contains:
+                        - Task ID (clickable to select)
+                        - User name
+                        - Status badge (colored: orange/blue/green/red)
+                        - Progress bar mini version
+                        - Formatted timestamp
+                        - Select button (triggers selectTask() to show logs)
+                        -->
                         <tbody id="tasksTableBody">
                             <tr>
                                 <td colspan="6" class="text-center">No tasks yet. Execute a script to get started!</td>
@@ -115,11 +348,34 @@ Select a task and execute to see logs here...</pre>
             </section>
         </main>
 
+        <!--
+        FOOTER: Currently commented out but shows last update time
+        Could be used to display system status or version
+        -->
         <!-- <footer class="footer">
             <p>Python Executor Dashboard v1.0 | Last updated: <span id="lastUpdate">-</span></p>
         </footer> -->
     </div>
 
+    <!--
+    ==================================================================
+    JAVASCRIPT LINK
+    ==================================================================
+    Links to client-side JavaScript file
+    url_for('static', filename='script.js') generates correct path
+    Frontend/static/script.js handles:
+    - Form submission
+    - API communication
+    - Real-time polling
+    - DOM updates
+    - Event listeners
+    
+    WHY AT END OF BODY?
+    Script loads after all HTML elements exist
+    Prevents "element not found" errors in JavaScript
+    Improves page load speed (HTML renders first)
+    ==================================================================
+    -->
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
